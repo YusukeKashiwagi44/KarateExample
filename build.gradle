@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+ext {
+    karateVersion = '1.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile "com.intuit.karate:karate-junit5:${karateVersion}"
+    implementation "net.lingala.zip4j:zip4j:2.7.0"
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+}
+
+test {
+    maxHeapSize = "3g"
+    useJUnitPlatform()
+    systemProperties System.properties
+    outputs.upToDateWhen { false }
+}
+
+task karateDebug(type: JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'com.intuit.karate.cli.Main'
+}
+
+def defaultEncoding = 'UTF-8'
+tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding }
+
+sourceSets {
+    test {
+        resources {
+            srcDir file('src/test/java')
+            exclude '**/*.java'
+        }
+    }
+}
